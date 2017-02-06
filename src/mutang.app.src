@@ -1,0 +1,13 @@
+%% -*- mode: erlang -*-
+{application, mutang,
+ [
+  {description, "Efficient (but mutable!) data structures for Erlang"},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
+%% vim: set filetype=erlang tabstop=2

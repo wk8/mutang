@@ -1,0 +1,11 @@
+language: erlang
+
+# TODO wkpo more support?
+otp_release:
+  - 19.0
+  - 19.1
+  - 19.2
+
+script:
+  - make get-rebar all_but_dialyzer
+  - make get-rebar dialyzer
