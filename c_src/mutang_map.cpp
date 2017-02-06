@@ -17,10 +17,9 @@ using namespace std;
 
 typedef struct mutang_map_t {
   unordered_map<int, int>* map;
-  // provides a (non-fool proof, but
-  // sufficient to protect against non-intentional errors) mechanism of
-  // ensuring that the erlang code does not assume the immutability of
-  // mutang_map references
+  // provides a (non-fool proof, but sufficient to protect against
+  // non-intentional errors) mechanism of ensuring that the erlang code does not
+  // assume the immutability of mutang_map references
   unsigned int version;
 } mutang_map_t;
 
