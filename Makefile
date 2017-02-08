@@ -40,3 +40,6 @@ else
 	@echo "ERROR: missing concrete.mk"
 	@echo "  run: concrete update"
 endif
+
+build_benchmark:
+	erlc -o ebin/ benchmark/*.erl
