@@ -207,7 +207,7 @@ doc:
 	@$(REBARC) doc skip_deps=true
 
 shell:
-	@$(ERL) -pa deps/*/ebin ebin .eunit
+	@$(ERL) -pa .eunit deps/*/ebin ebin
 
 tags:
 	find src deps -name "*.[he]rl" -print | etags -

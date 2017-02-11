@@ -4,7 +4,11 @@
 -export([
     new/0,
     put/3,
-    get/2
+    get/2,
+    wkpo/0,
+    reset_wkpo/0,
+    get_nsec/0,
+    reset_nsec/0
 ]).
 
 -on_load(init/0).
@@ -23,9 +27,21 @@ new() ->
     {Pointer, Version} = nif_new(),
     #?MODULE{pointer = Pointer, version = Version}.
 
-put(Key, Value, Map) ->
-    nif_wrapper(Map, fun nif_put/4, [Key, Value],
-                fun(NewVersion) -> Map#?MODULE{version = NewVersion} end).
+put(Key, Value, #?MODULE{pointer = Pointer, version = Version} = Map) ->
+    TimeBefore = wkpo(),
+    {Time, {ok, NewVersion}} = timer:tc(
+        fun() -> nif_put(Pointer, Version, Key, Value) end),
+    erlang:put(wkpo, TimeBefore + Time),
+    Map#?MODULE{version = NewVersion}.
+
+wkpo() ->
+    case erlang:get(wkpo) of
+        undefined -> 0;
+        V -> V
+    end.
+
+reset_wkpo() ->
+    erlang:put(wkpo, 0).
 
 get(Key, Map) ->
     nif_wrapper(Map, fun nif_get/3, [Key],
@@ -55,5 +71,8 @@ init() -> ?INIT_NIF.
 nif_new() -> ?NOT_LOADED.
 nif_put(_Pointer, _Version, _Key, _Value) -> ?NOT_LOADED.
 nif_get(_Pointer, _Version, _Key) -> ?NOT_LOADED.
+
+get_nsec() -> ?NOT_LOADED.
+reset_nsec() -> ?NOT_LOADED.
 
 %%% End of NIF functions

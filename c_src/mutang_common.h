@@ -14,21 +14,9 @@ static ERL_NIF_TERM atom_badversion;
 // is right
 #define UNPACK_MUTANG_OBJ_AND_CHECK_VERSION(type)                              \
   mutang_##type##_t* type;                                                     \
-  unsigned int expected_version;                                               \
-  if (!enif_get_resource(env, argv[0], mutang_##type##_resource, (void**)&type)\
-      || !enif_get_uint(env, argv[1], &expected_version)) {                    \
-    return enif_make_tuple2(env, atom_error, atom_bad##type);                  \
-  }                                                                            \
-  if (type->version != expected_version) {                                     \
-    ERL_NIF_TERM actual_version = enif_make_uint(env, type->version);          \
-    return enif_make_tuple3(env, atom_error, atom_badversion, actual_version); \
-  }
+    enif_get_resource(env, argv[0], mutang_##type##_resource, (void**)&type);
 
 // same idea, to bump the obect's version and pack it as an erlang term
 #define BUMP_AND_PACK_MUTANG_OBJ_VERSION(type)                                 \
-  if (map->version == UINT_MAX) {                                              \
-    map->version = 0;                                                          \
-  } else {                                                                     \
-    map->version++;                                                            \
-  }                                                                            \
+  map->version++;                                                                             \
   ERL_NIF_TERM version_term = enif_make_uint(env, map->version);
