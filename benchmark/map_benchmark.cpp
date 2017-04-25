@@ -1,6 +1,6 @@
 /*
-* To run:
-* g++ map_benchmark.cpp -O3 -stdlib=libc++ -std=c++11 -o map_benchmark.x && ./map_benchmark.x 1000 1000
+To run:
+g++ map_benchmark.cpp -O3 -stdlib=libc++ -std=c++11 -o map_benchmark.x && ./map_benchmark.x 1000 1000
 */
 
 #include <stdlib.h>
@@ -56,14 +56,15 @@ int benchmark_get_once(const int* keys, const std::unordered_map<int, int>* map,
 
   for (int i = 0; i < n; i++) {
     iterator = map->find(keys[i]);
-    result = iterator->second;
+    result |= iterator->second;
   }
 
   return result;
 }
 
-void benchmark_get(const int* keys, const std::unordered_map<int, int>* map, const int n, const int reps, std::vector<int>* times) {
+int benchmark_get(const int* keys, const std::unordered_map<int, int>* map, const int n, const int reps, std::vector<int>* times) {
   timestamp_t start, end;
+  int result = 0;
 
   times->clear();
   times->reserve(reps);
@@ -71,17 +72,19 @@ void benchmark_get(const int* keys, const std::unordered_map<int, int>* map, con
   for (int i = 0; i < reps; i++) {
     get_timestamp(&start);
 
-    benchmark_get_once(keys, map, n);
+    result |= benchmark_get_once(keys, map, n);
 
     get_timestamp(&end);
     times->push_back(end - start);
   }
+
+  return result;
 }
 
 const int* random_list(const int n) {
   int* random_list = (int*) malloc(sizeof(int) * n);
   for (int i = 0; i < n; i++) {
-    random_list[n] =  rand() % (RANDOM_RANGE_WIDTH - 1);
+    random_list[i] =  rand() % (RANDOM_RANGE_WIDTH - 1);
   }
 
   return random_list;
@@ -126,7 +129,11 @@ int main(int argc, char* argv[]) {
 
   const std::unordered_map<int, int>* map = benchmark_put_once(keys, values, n);
 
-  benchmark_get(keys, map, n, reps, &times);
+  int get_result = benchmark_get(keys, map, n, reps, &times);
+  if (get_result == 0) {
+    // only here to make sure the compiler doesn't optimize everything away...
+    std::cout << "not gonna happen";
+  }
   process_times("Get", &times, reps);
 
   delete keys;
